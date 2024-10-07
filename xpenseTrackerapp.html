@@ -41,7 +41,7 @@
         childEle.textContent= obj.ea +" - "+ obj.cd+" - "+obj.cc;
 
         const deletebtn= document.createElement("button");
-        deletebtn.textContent=" Delete Expense ";
+        deletebtn.textContent="Delete Expense";
         deletebtn.onclick=()=>{
             localStorage.removeItem(obj.cc);
             parentEle.removeChild(childEle)
@@ -54,7 +54,7 @@
     
 
 const editbtn=document.createElement("button");
-editbtn.textContent=' Edit Expense ';
+editbtn.textContent='Edit Expense';
 
 editbtn.onclick=()=>{
     localStorage.removeItem(obj.cc);
