@@ -1,0 +1,45 @@
+/* Center the entire app */
+.app-container {
+    text-align: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Center content on the same line (Password Keeper, Total Passwords, and Search) */
+  .center-content {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Styling for the form */
+  form {
+    margin-top: 20px;
+  }
+  
+  input[type="text"], button {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+  
+  /* Basic list styling for passwords */
+  li {
+    list-style-type: none;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Button hover effect */
+  button:hover {
+    background-color: #0056b3;
+    color: white;
+  }
+  
