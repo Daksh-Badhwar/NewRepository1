@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Keeper</title>
+</head>
+<body>
+    <h2 style="text-align: center;">Password Keeper</h2>
+    <p style="text-align: center;">Total passwords: <span id="totalPasswords">0</span></p>
+    <div style="text-align: center;">
+        <label style="display: inline;">Search:</label>
+        <input type="text" id="searchBox" oninput="filterPasswords()" style="margin-left: 5px;">
+    </div>
+    
+    <form id="passwordForm" onsubmit="handleFormSubmit(event)">
+        <label>Title:</label>
+        <input type="text" id="title" required>
+        <br><br>
+        <label>Password:</label>
+        <input type="text" id="password" required>
+        <br><br>
+        <button type="submit">Add</button>
+    </form>
+    
+    <ul id="passwordList"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+    
+    <script>
+        let editingId = null;
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const userPasswordObj = {
+                tit: event.target.title.value,
+                pass: event.target.password.value
+            };
+
+            if (editingId) {
+                // Update the existing entry (edit case)
+                axios
+                    .put(`https://crudcrud.com/api/721e1f7ef99c4bc785556f5c48b63e03/UserData/${editingId}`, userPasswordObj)
+                    .then(response => {
+                        // Update the UI with the new data directly
+                        const updatedData = response.data;
+                        const existingElement = document.getElementById(updatedData._id);
+                        existingElement.textContent = `${updatedData.tit} - ${updatedData.pass} `;
+                        existingElement.appendChild(existingElement.querySelector('button')); // Keep the buttons
+
+                        editingId = null; // Reset editingId after updating
+                    })
+                    .catch(error => console.log("Error updating user:", error));
+            } else {
+                // Create new password entry
+                axios
+                    .post("https://crudcrud.com/api/721e1f7ef99c4bc785556f5c48b63e03/UserData", userPasswordObj)
+                    .then(response => {
+                        displayUserOnScreen(response.data);
+                    })
+                    .catch(error => console.log("Error creating user:", error));
+            }
+
+            // Clear input fields
+            document.getElementById("passwordForm").reset();
+        }
+       
+        function displayUserOnScreen(userPasswordObj) {
+            const parentEle = document.getElementById("passwordList");
+
+            // Check if element already exists (for edit case)
+            let existingElement = document.getElementById(userPasswordObj._id);
+            if (existingElement) {
+                existingElement.remove();
+            }
+
+            const childEle = document.createElement("li");
+            childEle.id = userPasswordObj._id;
+            childEle.textContent = `${userPasswordObj.tit} - ${userPasswordObj.pass} `;
+
+            // Delete button
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.onclick = function() {
+                axios
+                    .delete(`https://crudcrud.com/api/721e1f7ef99c4bc785556f5c48b63e03/UserData/${userPasswordObj._id}`)
+                    .then(() => {
+                        childEle.remove();
+                        updateTotalPasswords();
+                    })
+                    .catch(error => console.log("Error deleting user:", error));
+            };
+            childEle.appendChild(deleteBtn);
+            childEle.appendChild(document.createTextNode(" "));
+
+            // Edit button (edit case)
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.onclick = function() {
+                document.getElementById("title").value = userPasswordObj.tit;
+                document.getElementById("password").value = userPasswordObj.pass;
+                editingId = userPasswordObj._id; // Save ID for edit case
+            };
+            childEle.appendChild(editBtn);
+
+            parentEle.appendChild(childEle);
+            updateTotalPasswords();
+        }
+
+        function updateTotalPasswords() {
+            document.getElementById("totalPasswords").textContent = document.getElementById("passwordList").children.length;
+        }
+
+        function fetchUsersFromCloud() {
+            axios
+                .get("https://crudcrud.com/api/721e1f7ef99c4bc785556f5c48b63e03/UserData")
+                .then(response => {
+                    response.data.forEach(userPasswordObj => displayUserOnScreen(userPasswordObj));
+                })
+                .catch(error => console.log("Error fetching users:", error));
+        }
+
+        function filterPasswords() {
+            const searchTerm = document.getElementById("searchBox").value.toLowerCase();
+            const passwords = document.getElementById("passwordList").children;
+
+            for (const item of passwords) {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? "" : "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchUsersFromCloud();
+        });
+    </script>
+</body>
+</html>

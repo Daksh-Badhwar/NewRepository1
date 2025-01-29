@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker App</title>
+
+</head>
+<body>
+    <form onsubmit="func(event)">
+    <label for ="xamount"> Choose expense amount:</label>
+    <input type="number" id="xamount"  name="amount" required>
+    <label  for ="desc"> Choose Description:</label>
+    <input type="text" id="desc"  name="cd" required>
+    <label for="cid"> Choose Category:</label>
+    <select id="cid" name="chc">
+        <option>Food</option>
+        <option>Electricity</option>
+        <option>Movie</option>
+    </select>
+
+<button type="submit"> Add Expense </button>
+</form>
+<ul id="listOfitems"></ul> 
+<script>
+   function func(event){
+    event.preventDefault();
+    const ea=event.target.amount.value;
+    const cd=event.target.cd.value;
+    const cc= event.target.chc.value;
+    const obj={ea:ea,
+        cd,
+        cc}
+        localStorage.setItem(obj.cc,JSON.stringify(obj));
+       fu(obj);}
+
+    
+    function fu (obj){
+        const parentEle= document.getElementById("listOfitems");
+        const childEle= document.createElement("li");
+        childEle.textContent= obj.ea +" - "+ obj.cd+" - "+obj.cc;
+
+        const deletebtn= document.createElement("button");
+        deletebtn.textContent="Delete Expense";
+        deletebtn.onclick=()=>{
+            localStorage.removeItem(obj.cc);
+            parentEle.removeChild(childEle)
+
+    };
+    childEle.appendChild(deletebtn);
+    parentEle.appendChild(childEle);
+
+    
+    
+
+const editbtn=document.createElement("button");
+editbtn.textContent='Edit Expense';
+
+editbtn.onclick=()=>{
+    localStorage.removeItem(obj.cc);
+    parentEle.removeChild(childEle);
+    document.getElementById("xamount").value= obj.ea;
+    document.getElementById("desc").value= obj.cd;
+    document.getElementById("cid").value= obj.cc;
+
+};
+childEle.appendChild(editbtn);
+    parentEle.appendChild(childEle);
+
+}
+
+</script>
+</body>
+</html>

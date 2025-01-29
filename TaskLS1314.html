@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form onsubmit="saveToLocalStorage(event)">
+    <label>Name:</label>
+    <input type="text" name="username"  id="abc"   required>
+    <label>Email:</label>
+    <input type="email" name="email"  id="def"      required>               
+    <label> Ph: </label>
+    <input type="tel" name="phonenumber" id="ghi">
+    <button type="submit">Submit</button>
+</form>
+<ul id="listOfitems"></ul>       
+<script>
+ function saveToLocalStorage(event){
+event.preventDefault();
+const name= event.target.username.value;
+const email=event.target.email.value;
+const ph=event.target.phonenumber.value;
+const obj = { name:name,
+              email:email,
+              ph     //works
+}
+localStorage.setItem(obj.email,JSON.stringify(obj)); //for storing multiple
+func(obj);
+}
+
+function func (obj){
+    const parentEle= document.getElementById('listOfitems');
+    const childEle= document.createElement('li');
+    childEle.textContent= obj.name +' - ' + obj.email +' - ' + obj.ph;
+    //parentEle.appendChild(childEle);
+    //or other method //li in ul
+    //parentEle.innerHTML=parentEle.innerHTML+`<li> ${obj.name} - ${obj.email} - ${obj.ph} </li>`;
+
+   //create delete button
+   const deleteButton= document.createElement('button');
+   
+   deleteButton.textContent='Delete';
+  
+   deleteButton.onclick = ()=>{
+    localStorage.removeItem(obj.email);
+    parentEle.removeChild(childEle);
+   };
+   childEle.appendChild(deleteButton);
+   //parentEle.appendChild(childEle);
+
+   const editButton= document.createElement('button');
+   
+   editButton.textContent='Edit';
+  
+   editButton.onclick = ()=>{
+    localStorage.removeItem(obj.email);
+    parentEle.removeChild(childEle);
+    document.getElementById('abc').value=obj.name;
+    document.getElementById('def').value=obj.email;
+    document.getElementById('ghi').value=obj.ph;
+
+   };
+   childEle.appendChild(editButton);
+   parentEle.appendChild(childEle);
+}
+
+
+</script>
+
+
+
+</body>
+</html>
